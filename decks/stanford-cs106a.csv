@@ -1,0 +1,9 @@
+term,definition
+Variable,A named storage location in memory that holds a value which can change during program execution
+Parameter,A variable listed in a function definition; receives its value from an argument at call time
+Return value,The value a function passes back to its caller when it finishes executing
+Loop,A control structure that repeats a block of code as long as a condition holds or over a collection of items
+Conditional,A control structure (if / else) that executes different code depending on whether a boolean condition is true
+Function decomposition,The practice of breaking a large problem into smaller functions each responsible for one clear task
+Karel,A robot in Stanford's teaching language for CS 106A that navigates a grid world and manipulates beepers
+Debugging,The systematic process of finding and fixing errors in code by tracing execution and testing hypotheses

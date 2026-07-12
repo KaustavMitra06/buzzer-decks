@@ -1,0 +1,9 @@
+term,definition
+Abstraction,Hiding implementation details behind a well-defined interface so higher-level code can reason about "what" without "how"
+Higher-order function,A function that either takes another function as an argument or returns a function as its result
+Closure,A function bundled together with the lexical environment it was defined in, capturing free variables from that scope
+Tail call,A function call whose result is returned directly by the caller — can be optimized to reuse the caller's stack frame
+Lambda calculus,A minimal formal system based on function abstraction and application; the foundation of functional programming
+Referential transparency,A property where an expression can always be replaced by its value without changing program behavior
+Environment model,A model of computation where evaluation happens within frames of variable bindings, chained together into an environment
+Streams,Lazily-evaluated infinite sequences constructed with delayed pairs; enable representing conceptually-infinite data

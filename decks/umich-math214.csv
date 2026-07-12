@@ -1,0 +1,9 @@
+term,definition
+Vector space,A set closed under vector addition and scalar multiplication, satisfying eight axioms including associativity, commutativity, and distributivity
+Linear independence,A set of vectors where no vector can be written as a linear combination of the others
+Basis,A linearly independent set of vectors that spans a vector space; every vector in the space has a unique representation in the basis
+Rank,The dimension of the column space of a matrix; equivalently the number of linearly independent columns
+Nullity,The dimension of the null space of a matrix; equals the number of free variables in the reduced row-echelon form
+Eigenvalue,A scalar λ such that Ax = λx for some nonzero vector x; roots of the characteristic polynomial det(A − λI) = 0
+Eigenvector,A nonzero vector x satisfying Ax = λx for some scalar eigenvalue λ
+Diagonalization,Writing a matrix A as PDP⁻¹ where D is diagonal; possible iff A has n linearly independent eigenvectors

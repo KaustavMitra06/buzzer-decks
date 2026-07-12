@@ -1,0 +1,182 @@
+[
+  {
+    "file": "umich-bio101.csv",
+    "name": "UMich BIO 101 — Intro to Biology",
+    "tags": {
+      "school": ["University of Michigan"],
+      "subject": ["Biology"],
+      "course": ["BIO 101"],
+      "professor": ["Dr. Chen"],
+      "year": ["2026"],
+      "prereqs": []
+    }
+  },
+  {
+    "file": "umich-chem210.csv",
+    "name": "UMich CHEM 210 — Organic Chemistry",
+    "tags": {
+      "school": ["University of Michigan"],
+      "subject": ["Chemistry"],
+      "course": ["CHEM 210"],
+      "professor": ["Dr. Patel"],
+      "year": ["2026"],
+      "prereqs": ["CHEM 100"]
+    }
+  },
+  {
+    "file": "umich-math214.csv",
+    "name": "UMich MATH 214 — Linear Algebra",
+    "tags": {
+      "school": ["University of Michigan"],
+      "subject": ["Mathematics"],
+      "course": ["MATH 214"],
+      "professor": ["Prof. Nguyen"],
+      "year": ["2025"],
+      "prereqs": ["MATH 116"]
+    }
+  },
+  {
+    "file": "mit-1801-calculus.csv",
+    "name": "MIT 18.01 — Single Variable Calculus",
+    "tags": {
+      "school": ["MIT"],
+      "subject": ["Mathematics"],
+      "course": ["18.01"],
+      "professor": ["Prof. Anderson"],
+      "year": ["2025"],
+      "prereqs": []
+    }
+  },
+  {
+    "file": "mit-6001-sicp.csv",
+    "name": "MIT 6.001 — Structure and Interpretation of Programs",
+    "tags": {
+      "school": ["MIT"],
+      "subject": ["Computer Science"],
+      "course": ["6.001"],
+      "professor": ["Prof. Sussman"],
+      "year": ["2024"],
+      "prereqs": []
+    }
+  },
+  {
+    "file": "mit-801-physics.csv",
+    "name": "MIT 8.01 — Physics I: Classical Mechanics",
+    "tags": {
+      "school": ["MIT"],
+      "subject": ["Physics"],
+      "course": ["8.01"],
+      "professor": ["Dr. Kim"],
+      "year": ["2026"],
+      "prereqs": ["18.01"]
+    }
+  },
+  {
+    "file": "stanford-cs106a.csv",
+    "name": "Stanford CS 106A — Programming Methodology",
+    "tags": {
+      "school": ["Stanford"],
+      "subject": ["Computer Science"],
+      "course": ["CS 106A"],
+      "professor": ["Prof. Roberts"],
+      "year": ["2026"],
+      "prereqs": []
+    }
+  },
+  {
+    "file": "stanford-psyc1.csv",
+    "name": "Stanford PSYC 1 — Intro to Psychology",
+    "tags": {
+      "school": ["Stanford"],
+      "subject": ["Psychology"],
+      "course": ["PSYC 1"],
+      "professor": ["Prof. Zimbardo"],
+      "year": ["2025"],
+      "prereqs": []
+    }
+  },
+  {
+    "file": "stanford-econ1.csv",
+    "name": "Stanford ECON 1 — Principles of Microeconomics",
+    "tags": {
+      "school": ["Stanford"],
+      "subject": ["Economics"],
+      "course": ["ECON 1"],
+      "professor": ["Prof. Klein"],
+      "year": ["2026"],
+      "prereqs": []
+    }
+  },
+  {
+    "file": "berkeley-cs61a.csv",
+    "name": "Berkeley CS 61A — Structure & Interpretation",
+    "tags": {
+      "school": ["UC Berkeley"],
+      "subject": ["Computer Science"],
+      "course": ["CS 61A"],
+      "professor": ["Dr. Hilfinger"],
+      "year": ["2026"],
+      "prereqs": []
+    }
+  },
+  {
+    "file": "berkeley-math1b.csv",
+    "name": "Berkeley MATH 1B — Calculus II",
+    "tags": {
+      "school": ["UC Berkeley"],
+      "subject": ["Mathematics"],
+      "course": ["MATH 1B"],
+      "professor": ["Prof. Ribet"],
+      "year": ["2025"],
+      "prereqs": ["MATH 1A"]
+    }
+  },
+  {
+    "file": "harvard-hist10.csv",
+    "name": "Harvard HIST 10 — Modern World History",
+    "tags": {
+      "school": ["Harvard"],
+      "subject": ["History"],
+      "course": ["HIST 10"],
+      "professor": ["Prof. Bailyn"],
+      "year": ["2025"],
+      "prereqs": []
+    }
+  },
+  {
+    "file": "harvard-span20.csv",
+    "name": "Harvard SPAN 20 — Intermediate Spanish",
+    "tags": {
+      "school": ["Harvard"],
+      "subject": ["Spanish"],
+      "course": ["SPAN 20"],
+      "professor": ["Prof. García"],
+      "year": ["2026"],
+      "prereqs": ["SPAN 10"]
+    }
+  },
+  {
+    "file": "biology-essentials.csv",
+    "name": "Biology essentials",
+    "tags": {
+      "subject": ["Biology"],
+      "year": ["General"]
+    }
+  },
+  {
+    "file": "cs-fundamentals.csv",
+    "name": "CS fundamentals",
+    "tags": {
+      "subject": ["Computer Science"],
+      "year": ["General"]
+    }
+  },
+  {
+    "file": "physics-mechanics.csv",
+    "name": "Physics — mechanics",
+    "tags": {
+      "subject": ["Physics"],
+      "year": ["General"]
+    }
+  }
+]

@@ -1,0 +1,136 @@
+name: Validate deck submission
+
+# Runs on every deck-submission issue (opened or edited) and comments back
+# with parse results. Adds `csv-valid` or `csv-invalid` label so moderators
+# can filter their inbox at a glance.
+#
+# Also triggers on PRs that touch curated deck CSVs under public/decks/
+# so contributors get the same instant feedback if the file was pasted
+# into a PR instead of an issue.
+
+on:
+  issues:
+    types: [opened, edited, labeled]
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'decks/**/*.csv'
+
+permissions:
+  issues: write
+  pull-requests: write
+  contents: read
+
+jobs:
+  validate-issue:
+    if: github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'deck-submission')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install
+        run: npm ci
+
+      - name: Validate the submission body
+        id: validate
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          node --input-type=module -e '
+            import { validateSubmissionIssue } from "./scripts/moderation/validateSubmission.js"
+            const result = validateSubmissionIssue(process.env.ISSUE_BODY || "")
+            const fs = await import("node:fs")
+            fs.writeFileSync(process.env.GITHUB_OUTPUT, `ok=${result.ok}\n`, { flag: "a" })
+            let body
+            if (result.ok) {
+              const sample = result.sample.map((c, i) => `${i + 1}. **${c.term}** — ${c.definition}`).join("\n")
+              body = `✅ **CSV parses cleanly** — ${result.cardCount} card${result.cardCount === 1 ? "" : "s"} detected.\n\n**First rows:**\n${sample}\n\nA moderator will review the tags and merge this into the curated catalogue on the next release.`
+            } else {
+              body = `❌ **CSV validation failed:** ${result.error}\n\nEdit the Issue body to fix the CSV, and the validator will re-run automatically.`
+            }
+            fs.writeFileSync("comment-body.md", body)
+          '
+
+      - name: Add validity label
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: ${{ steps.validate.outputs.ok == 'true' && 'csv-valid' || 'csv-invalid' }}
+
+      - name: Remove opposite label
+        continue-on-error: true
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: ${{ steps.validate.outputs.ok == 'true' && 'csv-invalid' || 'csv-valid' }}
+
+      - name: Comment on the issue
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body-file: comment-body.md
+
+  validate-pr-decks:
+    if: github.event_name == 'pull_request_target'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install
+        run: npm ci
+
+      - name: Validate every CSV touched by this PR
+        id: validate
+        env:
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          # Find CSVs under decks/ that changed in this PR.
+          git fetch origin "$PR_BASE_SHA" --depth=1
+          FILES=$(git diff --name-only --diff-filter=AM "$PR_BASE_SHA"..."$PR_HEAD_SHA" -- 'decks/**/*.csv' || true)
+          if [ -z "$FILES" ]; then
+            echo "No deck CSVs to validate."
+            echo "found=0" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          echo "found=1" >> $GITHUB_OUTPUT
+          node --input-type=module -e '
+            import fs from "node:fs"
+            import { validateCsv } from "./scripts/moderation/validateSubmission.js"
+            const files = `'"$FILES"'`.trim().split(/\r?\n/).filter(Boolean)
+            const lines = ["**Deck CSV validation results:**\n"]
+            let anyBad = false
+            for (const file of files) {
+              const text = fs.readFileSync(file, "utf8")
+              const r = validateCsv(text)
+              if (r.ok) {
+                lines.push(`✅ \`${file}\` — ${r.cardCount} cards.`)
+              } else {
+                anyBad = true
+                lines.push(`❌ \`${file}\` — ${r.error}`)
+              }
+            }
+            fs.writeFileSync("comment-body.md", lines.join("\n"))
+            fs.writeFileSync(process.env.GITHUB_OUTPUT, `bad=${anyBad}\n`, { flag: "a" })
+          '
+
+      - name: Comment on the PR
+        if: steps.validate.outputs.found == '1'
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-file: comment-body.md
+
+      - name: Fail if any CSV was invalid
+        if: steps.validate.outputs.bad == 'true'
+        run: exit 1

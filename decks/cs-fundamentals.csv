@@ -1,0 +1,11 @@
+term,definition
+Recursion,A function that calls itself with a smaller subproblem until reaching a base case
+Big O notation,A way to describe how an algorithm's runtime grows as input size increases
+Array,An ordered collection of elements accessible by numeric index in constant time
+Linked list,A sequence of nodes where each node holds a value and a reference to the next
+Hash table,A data structure mapping keys to values via a hash function for near-constant lookup
+Binary search,An algorithm that halves the search space each step by comparing to the middle element
+Stack,A LIFO (last-in-first-out) collection with push and pop operations
+Queue,A FIFO (first-in-first-out) collection with enqueue and dequeue operations
+Pointer,A variable that stores the memory address of another value
+Time complexity,A measure of how an algorithm's runtime scales with the size of its input

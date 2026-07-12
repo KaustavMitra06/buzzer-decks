@@ -1,0 +1,104 @@
+name: Content moderation
+
+# Runs a small wordlist-based check on every new issue body, issue
+# comment, PR comment, and PR review comment coming from a non-
+# collaborator. Flagged content gets minimized (marked as spam) and
+# labeled `needs-moderation` on the parent issue/PR. Collaborators,
+# members, and the owner are exempt.
+#
+# Wordlist source: .github/moderation-wordlist.txt (maintainer-editable).
+
+on:
+  issues:
+    types: [opened, edited]
+  issue_comment:
+    types: [created, edited]
+  pull_request_review_comment:
+    types: [created, edited]
+
+permissions:
+  issues: write
+  pull-requests: write
+  contents: read
+
+jobs:
+  moderate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Extract content + author
+        id: extract
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_ASSOC: ${{ github.event.issue.author_association }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          COMMENT_ASSOC: ${{ github.event.comment.author_association }}
+        run: |
+          node --input-type=module -e '
+            import fs from "node:fs"
+            const evName = process.env.EVENT_NAME
+            const text = evName === "issues" ? process.env.ISSUE_BODY : process.env.COMMENT_BODY
+            const assoc = evName === "issues" ? process.env.ISSUE_ASSOC : process.env.COMMENT_ASSOC
+            const out = process.env.GITHUB_OUTPUT
+            fs.appendFileSync(out, `assoc=${assoc || ""}\n`)
+            // Encode the text as base64 so newlines / special chars survive round-trip.
+            fs.appendFileSync(out, `text_b64=${Buffer.from(text || "", "utf8").toString("base64")}\n`)
+          '
+
+      - name: Run the wordlist check
+        id: check
+        env:
+          TEXT_B64: ${{ steps.extract.outputs.text_b64 }}
+          ASSOC: ${{ steps.extract.outputs.assoc }}
+        run: |
+          node --input-type=module -e '
+            import fs from "node:fs"
+            import { moderate, parseWordlist } from "./scripts/moderation/checkContent.js"
+            const raw = fs.readFileSync(".github/moderation-wordlist.txt", "utf8")
+            const wordlist = parseWordlist(raw)
+            const text = Buffer.from(process.env.TEXT_B64 || "", "base64").toString("utf8")
+            const decision = moderate({
+              text,
+              wordlist,
+              authorAssociation: process.env.ASSOC || "",
+            })
+            const out = process.env.GITHUB_OUTPUT
+            fs.appendFileSync(out, `flagged=${decision.flagged}\n`)
+            fs.appendFileSync(out, `matches=${(decision.matches || []).join(",")}\n`)
+            fs.appendFileSync(out, `skipped=${decision.skipped || ""}\n`)
+          '
+
+      - name: Minimize the offending comment
+        if: steps.check.outputs.flagged == 'true' && github.event_name != 'issues'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_NODE_ID: ${{ github.event.comment.node_id }}
+        run: |
+          gh api graphql \
+            -f query='mutation($id:ID!){minimizeComment(input:{subjectId:$id,classifier:SPAM}){minimizedComment{isMinimized}}}' \
+            -f id="$COMMENT_NODE_ID"
+
+      - name: Label the parent issue / PR
+        if: steps.check.outputs.flagged == 'true'
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: needs-moderation
+          number: ${{ github.event.issue.number || github.event.pull_request.number }}
+
+      - name: Notify the maintainer
+        if: steps.check.outputs.flagged == 'true'
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.issue.number || github.event.pull_request.number }}
+          body: |
+            @KaustavMitra06 — this thread was auto-flagged by the moderation bot for review.
+
+            Matched terms: `${{ steps.check.outputs.matches }}`
+
+            If this is a false positive, add the `safe` label to override.

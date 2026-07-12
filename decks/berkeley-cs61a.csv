@@ -1,0 +1,9 @@
+term,definition
+Environment diagram,A visual representation of the frames and bindings used to evaluate a program; shows how names map to values
+Frame,A record of local variable bindings created by a function call; part of the environment used during evaluation
+Recursion,A technique where a function calls itself on a smaller subproblem until reaching a base case
+Data abstraction,Separating how compound data is used from how it is constructed; access is via constructors and selectors
+Object-oriented programming,A style organized around objects that bundle data with methods that operate on that data; supports inheritance and polymorphism
+Iterator,An object that produces a sequence of values one at a time; supports the __iter__ and __next__ protocol in Python
+Generator,A function that yields values lazily using the `yield` keyword, producing an iterator that resumes between calls
+Interpretation,The process of evaluating expressions in a language by walking the abstract syntax tree; alternative to compilation

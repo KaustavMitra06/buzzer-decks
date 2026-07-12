@@ -1,0 +1,18 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+Copyright (c) 2026 Kaustav Mitra and contributors.
+
+This license applies to the flashcard decks (CSV files under `decks/`) and
+any accompanying deck metadata (e.g. `decks/index.json`) contributed to
+this repository. You are free to share and adapt the decks for any purpose,
+including commercially, provided you give appropriate credit.
+
+Full license text: https://creativecommons.org/licenses/by/4.0/legalcode
+
+The moderation scripts under `scripts/moderation/` and the workflow YAMLs
+under `.github/workflows/` are made available under the same permissive
+terms so anyone can run an equivalent submission pipeline on their own
+repo.
+
+The Buzzer study app that consumes this catalog is a separate project and
+is NOT covered by this license.

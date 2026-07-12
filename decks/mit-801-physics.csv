@@ -1,0 +1,9 @@
+term,definition
+Inertia,The tendency of an object to resist changes in its state of motion; quantified by mass
+Free-body diagram,A sketch showing all forces acting on an object, used to apply Newton's second law
+Impulse,The change in momentum equal to force integrated over time; J = ∫F dt = Δp
+Conservation of momentum,In an isolated system with no external forces, total momentum stays constant before and after any interaction
+Elastic collision,A collision that conserves both momentum and kinetic energy; objects bounce off with no permanent deformation
+Inelastic collision,A collision that conserves momentum but not kinetic energy; some energy is lost to heat, sound, or deformation
+Centripetal acceleration,Acceleration directed toward the center of a circular path; magnitude v²/r for uniform circular motion
+Torque,The rotational equivalent of force; τ = r × F, causes changes in angular momentum

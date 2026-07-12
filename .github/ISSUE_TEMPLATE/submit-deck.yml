@@ -1,0 +1,99 @@
+name: Submit a study deck
+description: Contribute a deck to the curated Buzzer catalogue.
+title: '[Deck] '
+labels: ['deck-submission']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for contributing a deck! A moderator will review this and, if it looks good, save it into the curated catalogue on the next release. Sensitive info (personal notes, private study guides, copyrighted material) should not be submitted here.
+
+  - type: input
+    id: name
+    attributes:
+      label: Deck name
+      description: A clear, short title. e.g. "BIO 101 — Cell Biology Midterm"
+    validations:
+      required: true
+
+  - type: input
+    id: school
+    attributes:
+      label: School
+      placeholder: e.g. UMich, MIT, Stanford, or "General"
+    validations:
+      required: false
+
+  - type: input
+    id: subject
+    attributes:
+      label: Subject
+      placeholder: e.g. Biology, Computer Science, Spanish
+    validations:
+      required: true
+
+  - type: input
+    id: course
+    attributes:
+      label: Course number
+      placeholder: e.g. BIO101, CS106A
+    validations:
+      required: false
+
+  - type: input
+    id: professor
+    attributes:
+      label: Professor
+      placeholder: e.g. Dr. Smith
+    validations:
+      required: false
+
+  - type: input
+    id: year
+    attributes:
+      label: Year
+      placeholder: e.g. 2026
+    validations:
+      required: false
+
+  - type: input
+    id: prereqs
+    attributes:
+      label: Prerequisite courses (comma-separated)
+      placeholder: e.g. CHEM100, MATH105
+    validations:
+      required: false
+
+  - type: textarea
+    id: cards
+    attributes:
+      label: Cards (CSV)
+      description: |
+        Paste your deck as CSV with a header row. First column is the term, second is the definition.
+        Quote fields that contain commas: `"a term, with a comma","its definition"`.
+      value: |
+        term,definition
+        photosynthesis,plants convert light into chemical energy
+        mitochondria,the cell's power plant
+      render: csv
+    validations:
+      required: true
+
+  - type: input
+    id: source
+    attributes:
+      label: Source / attribution
+      description: If this deck came from a textbook, syllabus, or a peer, credit them here.
+      placeholder: e.g. Campbell Biology, 12th ed., ch. 6
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: rights
+    attributes:
+      label: Confirmations
+      options:
+        - label: I have the right to share this content, or it's public-domain / fair-use for study.
+          required: true
+        - label: This deck contains no personal information about students or professors.
+          required: true

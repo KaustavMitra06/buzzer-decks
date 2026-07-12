@@ -1,0 +1,9 @@
+term,definition
+Integration by parts,∫u dv = uv − ∫v du; used when the integrand is a product of two functions
+Trigonometric substitution,A technique that replaces variables with trig functions to simplify integrals containing √(a²−x²), √(a²+x²), or √(x²−a²)
+Partial fractions,Decomposing a rational function into a sum of simpler fractions before integrating each piece separately
+Improper integral,An integral where either a limit of integration is infinite or the integrand becomes unbounded within the interval
+Convergence test,A method for determining whether an infinite series has a finite sum; includes ratio, root, integral, and comparison tests
+Power series,An infinite series of the form Σ aₙ(x − c)ⁿ; may converge on an interval around the center c
+Radius of convergence,The nonnegative real number R for which a power series converges when |x − c| < R and diverges when |x − c| > R
+Taylor's theorem,Approximation of a smooth function by its Taylor polynomial, with an explicit remainder term bounding the error

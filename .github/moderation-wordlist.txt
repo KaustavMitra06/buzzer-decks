@@ -1,0 +1,34 @@
+# Buzzer moderation wordlist
+#
+# One word or short phrase per line, case-insensitive. Comments (`#`) and
+# blank lines are ignored. Matches are word-boundary based — "class" does
+# NOT flag "classic". The check is run over new issue bodies and comments
+# from non-collaborators only; maintainers can override with the "safe"
+# label on the parent issue if a false positive slips through.
+#
+# The intent is minimal: block clear-cut profanity + slurs that don't
+# belong on a study-focused project. Not a substitute for community
+# guidelines — see CONTRIBUTING.md when it exists.
+#
+# ---- profanity ----
+fuck
+shit
+bitch
+asshole
+bastard
+crap
+damn
+dick
+piss
+cunt
+prick
+whore
+slut
+# ---- slurs (partial; add locally as needed) ----
+# The full list is intentionally not committed publicly — extend on a
+# private fork or a protected file if broader coverage is needed.
+# ---- spam patterns ----
+buy now
+click here
+free money
+crypto giveaway

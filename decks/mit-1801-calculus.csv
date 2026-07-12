@@ -1,0 +1,9 @@
+term,definition
+Derivative,The instantaneous rate of change of a function at a point; the slope of the tangent line
+Chain rule,d/dx[f(g(x))] = f'(g(x)) · g'(x)
+Product rule,d/dx[u(x) · v(x)] = u'(x)v(x) + u(x)v'(x)
+Fundamental Theorem of Calculus,The integral of f from a to b equals F(b) − F(a) where F is any antiderivative of f
+Mean Value Theorem,If f is continuous on [a,b] and differentiable on (a,b), then there exists c in (a,b) with f'(c) = (f(b)−f(a))/(b−a)
+Riemann sum,An approximation of a definite integral by summing rectangle areas beneath a curve
+L'Hôpital's rule,If lim f(x)/g(x) has form 0/0 or ∞/∞, then lim f(x)/g(x) = lim f'(x)/g'(x) when the latter exists
+Taylor series,An infinite sum representing a function as f(a) + f'(a)(x−a) + f''(a)(x−a)²/2! + …

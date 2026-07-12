@@ -1,0 +1,55 @@
+name: Correct a card in a curated deck
+description: A card in a curated deck has a typo, factual error, or unclear wording.
+title: '[Correction] '
+labels: ['deck-correction']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping keep the curated catalogue accurate. This template can be pre-filled from inside the app — the in-deck "Report card" button opens a new issue with the deck name + card content already filled in.
+
+  - type: input
+    id: deck
+    attributes:
+      label: Deck name
+      description: Which deck contains the card?
+    validations:
+      required: true
+
+  - type: input
+    id: term
+    attributes:
+      label: Card term
+    validations:
+      required: true
+
+  - type: textarea
+    id: definition
+    attributes:
+      label: Card definition (as it currently appears)
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What's wrong?
+      description: Explain the mistake — typo, factual error, ambiguity, formatting problem, etc.
+    validations:
+      required: true
+
+  - type: textarea
+    id: fix
+    attributes:
+      label: Suggested fix
+      description: What should it say instead?
+    validations:
+      required: false
+
+  - type: input
+    id: source
+    attributes:
+      label: Source that backs up the fix
+      description: A textbook page, syllabus reference, authoritative link — anything the maintainer can verify.
+    validations:
+      required: false

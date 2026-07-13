@@ -330,5 +330,14 @@
         "General"
       ]
     }
+  },
+  {
+    "file": "verification-2-small-test-deck.csv",
+    "name": "Verification #2 — Small Test Deck",
+    "tags": {
+      "school": "TestSchool",
+      "subject": "Testing",
+      "year": "2026"
+    }
   }
 ]

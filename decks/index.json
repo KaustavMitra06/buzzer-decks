@@ -330,5 +330,23 @@
         "General"
       ]
     }
+  },
+  {
+    "file": "pipeline-demo-rainbow.csv",
+    "name": "Pipeline Demo — Rainbow (Delete Me)",
+    "tags": {
+      "school": [
+        "Demo University"
+      ],
+      "subject": [
+        "Science"
+      ],
+      "course": [
+        "DEMO 101"
+      ],
+      "year": [
+        "2026"
+      ]
+    }
   }
 ]

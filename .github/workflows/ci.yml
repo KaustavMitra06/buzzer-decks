@@ -5,6 +5,11 @@ on:
     branches: [main]
   push:
     branches: [main]
+  # Explicit trigger. Used by accept-submission.yml to fire CI on
+  # bot-authored PR branches — GITHUB_TOKEN pushes normally don't cascade
+  # into other workflows (infinite-loop prevention), but workflow_dispatch
+  # is exempt from that rule.
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

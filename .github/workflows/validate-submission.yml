@@ -23,7 +23,19 @@ permissions:
 
 jobs:
   validate-issue:
-    if: github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'deck-submission')
+    # Run on opened + edited (contributor made a change) OR when the
+    # `deck-submission` label itself is what's being added. Skip other
+    # `labeled` events (specifically: don't re-fire when the auto-tag-labels
+    # step adds school:*/subject:*/... — those don't change the CSV, so
+    # re-validating produces a duplicate comment).
+    if: |
+      github.event_name == 'issues'
+      && contains(github.event.issue.labels.*.name, 'deck-submission')
+      && (
+        github.event.action == 'opened'
+        || github.event.action == 'edited'
+        || (github.event.action == 'labeled' && github.event.label.name == 'deck-submission')
+      )
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

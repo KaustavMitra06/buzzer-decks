@@ -9,8 +9,14 @@ name: Validate deck submission
 # into a PR instead of an issue.
 
 on:
+  # Issues: `labeled` intentionally NOT in the list. Creating an Issue via
+  # the submit-deck template fires BOTH `opened` and `labeled` events (for
+  # the auto-applied `deck-submission` label), which duplicated the
+  # validator's comment. `opened` catches new submissions; `edited` catches
+  # body updates. Manual label-on-existing-Issue is a rare edge case —
+  # nudge with an edit if needed.
   issues:
-    types: [opened, edited, labeled]
+    types: [opened, edited]
   pull_request_target:
     types: [opened, synchronize, reopened]
     paths:
@@ -23,19 +29,7 @@ permissions:
 
 jobs:
   validate-issue:
-    # Run on opened + edited (contributor made a change) OR when the
-    # `deck-submission` label itself is what's being added. Skip other
-    # `labeled` events (specifically: don't re-fire when the auto-tag-labels
-    # step adds school:*/subject:*/... — those don't change the CSV, so
-    # re-validating produces a duplicate comment).
-    if: |
-      github.event_name == 'issues'
-      && contains(github.event.issue.labels.*.name, 'deck-submission')
-      && (
-        github.event.action == 'opened'
-        || github.event.action == 'edited'
-        || (github.event.action == 'labeled' && github.event.label.name == 'deck-submission')
-      )
+    if: github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'deck-submission')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -1,0 +1,125 @@
+name: Accept deck submission
+
+# When a maintainer comments `/accept` on a valid deck-submission Issue, this
+# workflow builds a PR that adds the submitted deck to decks/ and updates
+# index.json. The maintainer's role is now "read the Issue, comment /accept,
+# review the auto-generated PR, merge" — no manual copy-paste of CSVs.
+#
+# Guards (all must hold):
+#   - Comment is on an Issue (not a PR)
+#   - Comment starts with /accept
+#   - Comment author is OWNER / MEMBER / COLLABORATOR
+#   - Issue has both `deck-submission` and `csv-valid` labels
+#   - Issue does NOT have `accepted` label (idempotency)
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: accept-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  accept:
+    if: |
+      github.event.issue.pull_request == null
+      && startsWith(github.event.comment.body, '/accept')
+      && (
+        github.event.comment.author_association == 'OWNER'
+        || github.event.comment.author_association == 'MEMBER'
+        || github.event.comment.author_association == 'COLLABORATOR'
+      )
+      && contains(github.event.issue.labels.*.name, 'deck-submission')
+      && contains(github.event.issue.labels.*.name, 'csv-valid')
+      && !contains(github.event.issue.labels.*.name, 'accepted')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # We push a new branch, so a shallow clone is fine — no history rewrite.
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install
+        run: npm ci
+
+      - name: Build the PR shape
+        id: build
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          APPROVED_BY: ${{ github.event.comment.user.login }}
+        run: |
+          node --input-type=module -e '
+            import fs from "node:fs"
+            import path from "node:path"
+            import { buildDeckPr } from "./scripts/moderation/buildDeckPr.js"
+            const decksDir = "decks"
+            const indexPath = path.join(decksDir, "index.json")
+            const existingFilenames = fs.readdirSync(decksDir).filter((f) => f.endsWith(".csv"))
+            const existingIndexText = fs.readFileSync(indexPath, "utf8")
+            const pr = buildDeckPr({
+              issueBody: process.env.ISSUE_BODY || "",
+              issueNumber: Number(process.env.ISSUE_NUMBER),
+              approvedBy: process.env.APPROVED_BY || "unknown",
+              existingFilenames,
+              existingIndexText,
+            })
+            fs.writeFileSync(path.join(decksDir, pr.file), pr.csvContent.endsWith("\n") ? pr.csvContent : pr.csvContent + "\n")
+            fs.writeFileSync(indexPath, pr.nextIndexText)
+            fs.writeFileSync("pr-title.txt", pr.prTitle)
+            fs.writeFileSync("pr-body.md", pr.prBody)
+            const out = process.env.GITHUB_OUTPUT
+            fs.appendFileSync(out, `branch=${pr.branchName}\n`)
+            fs.appendFileSync(out, `commit_message=${pr.commitMessage}\n`)
+            fs.appendFileSync(out, `file=decks/${pr.file}\n`)
+            fs.appendFileSync(out, `card_count=${pr.cardCount}\n`)
+            console.log(`Prepared PR: ${pr.prTitle}`)
+            console.log(`  ${pr.file} (${pr.cardCount} cards)`)
+            console.log(`  branch: ${pr.branchName}`)
+          '
+
+      - name: Commit + push branch
+        env:
+          BRANCH: ${{ steps.build.outputs.branch }}
+          COMMIT_MSG: ${{ steps.build.outputs.commit_message }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add decks/
+          git commit -m "$COMMIT_MSG"
+          git push -u origin "$BRANCH"
+
+      - name: Open PR
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ steps.build.outputs.branch }}
+        run: |
+          TITLE=$(cat pr-title.txt)
+          URL=$(gh pr create --base main --head "$BRANCH" --title "$TITLE" --body-file pr-body.md)
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "Opened: $URL"
+
+      - name: Mark issue accepted + comment with PR link
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          PR_URL: ${{ steps.pr.outputs.url }}
+          FILE: ${{ steps.build.outputs.file }}
+        run: |
+          # Create the `accepted` label if missing (idempotent).
+          gh label create accepted --color "0e8a16" --description "Submission has been accepted; a PR is open." --force || true
+          gh issue edit "$ISSUE_NUMBER" --add-label accepted
+          gh issue comment "$ISSUE_NUMBER" --body "🎉 Accepted — see $PR_URL. \`$FILE\` will land in the curated catalog when that PR merges."

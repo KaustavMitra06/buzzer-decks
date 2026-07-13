@@ -26,7 +26,21 @@ Maintainers merge approved submissions into `decks/` on a rolling basis. The Buz
 
 ## Adding a curated deck (maintainer flow)
 
-Two-file commit:
+**Preferred:** comment `/accept` on the submission Issue. The [Accept deck submission](.github/workflows/accept-submission.yml) workflow will:
+
+1. Extract the CSV + tags from the Issue body
+2. Write `decks/<slug>.csv` and append the entry to `decks/index.json`
+3. Open a PR titled `[Deck] Add "<deck name>" (from #<issue>)`
+4. Label the Issue `accepted` and comment back with the PR link
+
+You then review the PR (auto-runs `Test moderation scripts` + `validate-pr-decks`), squash-merge it, and the Issue closes automatically via `Closes #N` in the PR body.
+
+Guards on `/accept`:
+- Comment author must be OWNER / MEMBER / COLLABORATOR
+- Issue must have both `deck-submission` and `csv-valid` labels
+- Issue must NOT already have the `accepted` label (idempotency)
+
+**Manual fallback** if the auto-PR misbehaves:
 
 1. Drop the CSV in `decks/<slug>.csv`
 2. Append one object to `decks/index.json`:
@@ -35,6 +49,19 @@ Two-file commit:
    ```
 
 The Buzzer app's `starterDecks.js` joins the manifest to the CSVs by filename — the join is verified in Buzzer's own CI, so a drop-file-without-manifest-entry (or vice versa) will fail there.
+
+## Auto-labeling
+
+When a submit-deck Issue lands, [Validate deck submission](.github/workflows/validate-submission.yml) applies structured labels based on the tag fields:
+
+| Field | Label prefix | Example |
+|---|---|---|
+| School | `school:` | `school:umich` |
+| Subject | `subject:` | `subject:biology` |
+| Course number | `course:` | `course:bio101` |
+| Year | `year:` | `year:2026` |
+
+Professor and prereqs are intentionally NOT labeled — too high-cardinality, would create label sprawl. Labels are lazy-created (first submission from a new school auto-creates the label).
 
 ## License
 

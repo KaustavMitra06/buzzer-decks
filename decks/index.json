@@ -330,15 +330,5 @@
         "General"
       ]
     }
-  },
-  {
-    "file": "pipeline-test-chemistry-basics.csv",
-    "name": "Pipeline Test — Chemistry Basics",
-    "tags": {
-      "school": "TestSchool",
-      "subject": "Chemistry",
-      "course": "CHEM101",
-      "year": "2026"
-    }
   }
 ]

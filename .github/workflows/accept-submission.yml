@@ -20,6 +20,10 @@ permissions:
   contents: write
   pull-requests: write
   issues: write
+  # Needed to trigger ci.yml via workflow_dispatch on the bot's PR branch.
+  # GITHUB_TOKEN pushes normally don't cascade workflows, so ci.yml won't
+  # run automatically on the PR — we explicitly kick it below.
+  actions: write
 
 concurrency:
   group: accept-${{ github.event.issue.number }}
@@ -111,6 +115,16 @@ jobs:
           URL=$(gh pr create --base main --head "$BRANCH" --title "$TITLE" --body-file pr-body.md)
           echo "url=$URL" >> "$GITHUB_OUTPUT"
           echo "Opened: $URL"
+
+      - name: Trigger CI on the new PR branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ steps.build.outputs.branch }}
+        # Explicitly fire ci.yml via workflow_dispatch. Without this, ci.yml
+        # never runs on the bot's PR because GITHUB_TOKEN-triggered pushes
+        # don't cascade into pull_request workflows — and then the PR sits
+        # forever unable to satisfy the required status check.
+        run: gh workflow run ci.yml --repo "${{ github.repository }}" --ref "$BRANCH"
 
       - name: Mark issue accepted + comment with PR link
         env:

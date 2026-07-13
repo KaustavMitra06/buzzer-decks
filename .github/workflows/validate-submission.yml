@@ -73,6 +73,35 @@ jobs:
           issue-number: ${{ github.event.issue.number }}
           body-file: comment-body.md
 
+      - name: Apply tag labels to the issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          node --input-type=module -e '
+            import { execSync } from "node:child_process"
+            import { extractFormFields } from "./scripts/moderation/validateSubmission.js"
+            import { tagLabelsForFields } from "./scripts/moderation/tagLabels.js"
+            const fields = extractFormFields(process.env.ISSUE_BODY || "")
+            const labels = tagLabelsForFields(fields)
+            if (!labels.length) { console.log("No tag labels to apply."); process.exit(0) }
+            const repo = process.env.REPO
+            const issue = process.env.ISSUE_NUMBER
+            for (const l of labels) {
+              const desc = l.description.replace(/"/g, "\\\"")
+              try {
+                execSync(`gh label create "${l.name}" --repo "${repo}" --color "${l.color}" --description "${desc}" --force`, { stdio: "inherit" })
+              } catch (e) {
+                console.warn(`Failed to ensure label ${l.name}: ${e.message}`)
+              }
+            }
+            const names = labels.map(l => l.name).join(",")
+            execSync(`gh issue edit ${issue} --repo "${repo}" --add-label "${names}"`, { stdio: "inherit" })
+            console.log(`Applied ${labels.length} tag labels: ${names}`)
+          '
+
   validate-pr-decks:
     if: github.event_name == 'pull_request_target'
     runs-on: ubuntu-latest
